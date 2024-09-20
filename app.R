@@ -1,8 +1,10 @@
 library(shiny)
 library(tibble)
+library(tidyverse)
 
 api_url <- "http://127.0.0.1:8080/predict"
 log <- log4r::logger()
+house_data <- read.csv("https://raw.githubusercontent.com/gmtanner-cord/DATA470-2024/refs/heads/main/fmhousing/FM_Housing_2018_2022_clean.csv")
 
 ui <- fluidPage(
   titlePanel("Predicted Sold Price of House "),
@@ -38,12 +40,9 @@ ui <- fluidPage(
     
     # displays variables and predicted price
     mainPanel(
-      h2("House Variables"),
-      verbatimTextOutput("vals"),
+      plotOutput("pricePlot"), # plot output to display graph
       h2("Predicted Sold Price"),
       textOutput("pred"),
-      h2("Price vs Bedrooms Plot"),
-      plotOutput("pricePlot") # plot output to display graph
     )
   )
 )
@@ -98,16 +97,29 @@ server <- function(input, output) {
   output$pred <- renderText(pred()$.pred[[1]])
   output$vals <- renderPrint(vals())
   
-    # plot for bedrooms vs sold price
-    output$pricePlot <- renderPlot({
-      ggplot(house_data, aes(x = Total.Bedrooms, y = Sold.Price)) +
-        geom_point(size = 3, color = "lightblue") +  
-        geom_smooth(method = "lm", se = FALSE, color = "gray") +  # trend line
-        geom_point(aes(x = vals()$Total.Bedrooms, y = pred()$.pred[[1]]),  #  predicted point
-                   color = "pink", size = 5) +  
-        labs(x = "Total Bedrooms", y = "Sold Price", title = "Price vs Bedrooms") +
-        theme_minimal()
-    })
+  output$pricePlot <- renderPlot({
+    ggplot(house_data, aes(x = Total.Bedrooms, y = Sold.Price)) +
+      # plot of  data points
+      geom_jitter(size = 3, color = "steelblue", alpha = 0.3, width = 0.5, height = 0) +
+      
+      # plot of the predicted point
+      geom_point(aes(x = vals()$Total.Bedrooms, y = pred()$.pred[[1]]), 
+                 color = "red", size = 6, shape = 18) + # shape 18 for filled diamond
+      
+      # Add a linear regression line
+      geom_smooth(method = "lm", color = "darkgreen", se = FALSE, size = 1) +
+      labs(x = "Number of Bedrooms", 
+           y = "Sold Price ($)", 
+           title = "Relationship Between Bedrooms and Sold Price") +
+
+      theme_minimal(base_size = 15) +
+      theme(plot.title = element_text(hjust = 0.5, face = "bold"),
+            axis.title.x = element_text(margin = margin(t = 10)),
+            axis.title.y = element_text(margin = margin(r = 10))) +
+      annotate("text", label = "Predicted Point", x = vals()$Total.Bedrooms, 
+               y = pred()$.pred[[1]] + 10000, color = "red", size = 5, fontface = "italic")
+  })
+  
   
 }
 
