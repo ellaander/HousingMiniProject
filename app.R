@@ -1,59 +1,99 @@
-# app.R
 library(shiny)
-library(httr)
+library(tibble)
 
-# Define UI for application
+api_url <- "http://127.0.0.1:8080/predict"
+log <- log4r::logger()
+
 ui <- fluidPage(
-  titlePanel("Predicted Sold Price of House"),
+  titlePanel("Predicted Sold Price of House "),
   
+  # select total bedrooms
   sidebarLayout(
     sidebarPanel(
-      sliderInput("sliderBedrooms", "Total Number of Bedrooms", 0, 10, value = 2),
-      sliderInput("sliderBathrooms", "Total Number of Bathrooms", 0, 10, value = 2),
-      actionButton("submit", "Submit")
+      sliderInput(
+        "Total.Bedrooms",
+        "Total Bedrooms",
+        min = 0,
+        max = 10,
+        value = 3,
+        step = 1
+      ),
+      
+      # select total bathrooms
+      sliderInput(
+        "Total.Bathrooms",
+        "Total Bathrooms",
+        min = 0,
+        max = 10,
+        value = 3,
+        step = 1
+      ),
+      
+      # trigger predictions
+      actionButton(
+        "predict",
+        "Predict"
+      )
     ),
     
+    # displays variables and predicted price
     mainPanel(
-      plotOutput("plot1"),
-      h3("Predicted Sold Price from Model:"),
-      textOutput("pred1")
+      h2("House Variables"),
+      verbatimTextOutput("vals"),
+      h2("Predicted Sold Price"),
+      textOutput("pred")
     )
   )
 )
 
-# Define server logic required to draw the plot and make predictions
 server <- function(input, output) {
-  house_data <- read.csv("https://raw.githubusercontent.com/gmtanner-cord/DATA470-2024/refs/heads/main/fmhousing/FM_Housing_2018_2022_clean.csv")
+  log4r::info(log, "App Started") # log app starting
   
-  # Reactive to store prediction
-  prediction <- eventReactive(input$submit, {
-    res <- POST("http://localhost:8000/predict", body = list(
-      bedrooms = input$sliderBedrooms,
-      bathrooms = input$sliderBathrooms
-    ), encode = "json")
-    
-    content(res)$`1`  # Get the prediction from the API response
-  })
+  #store inputs in a tibble
+  vals <- reactive(
+    tibble(
+      Total.Bedrooms = input$Total.Bedrooms,
+      Total.Bathrooms = input$Total.Bathrooms,
+    )
+  )
   
-  # Render the prediction
-  output$pred1 <- renderText({
-    prediction()
-  })
+  # triggers predictions when predict is clicked
+  pred <- eventReactive(
+    input$predict,
+    {
+      log4r::info(log, "Prediction Requested")
+      
+      # call to prediction server
+      r <- httr2::request(api_url) |>
+        # attach values to request
+        httr2::req_body_json(vals()) |>
+        # handle errors 
+        httr2::req_error(is_error = \(resp) FALSE) |>
+        # perform request
+        httr2::req_perform()
+      
+      # log response
+      log4r::info(log, "Prediction Returned")
+      
+      # error handling
+      if (httr2::resp_is_error(r)) {
+        log4r::error(log, paste("HTTP Error",
+                                httr2::resp_status(r),
+                                httr2::resp_status_desc(r)))
+      }
+      
+      # parse response
+      httr2::resp_body_json(r)
+    },
+    
+    #ignore initial state, trigger after button click
+    ignoreInit = TRUE
+  )
   
-  # Render the plot
-  output$plot1 <- renderPlot({
-    bedInput <- input$sliderBedrooms
-    jitter_amount <- 1
-    
-    plot(jitter(house_data$Total.Bedrooms, amount = jitter_amount), house_data$Sold.Price,
-         xlab = "Total Bedrooms", ylab = "Sold Price",
-         main = "Total Bedrooms vs. Sold Price",
-         bty = "n", pch = 16, col = rgb(0.1, 0.6, 1, alpha = 0.4))
-    
-    # Highlight the predicted point
-    points(bedInput, prediction(), col = "pink", pch = 16, cex = 2)
-  })
+  # show predictions results on UI
+  output$pred <- renderText(pred()$.pred[[1]])
+  output$vals <- renderPrint(vals())
 }
 
-# Run the application 
+# Run the application
 shinyApp(ui = ui, server = server)
