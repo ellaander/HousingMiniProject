@@ -41,7 +41,7 @@ ui <- fluidPage(
       h2("House Variables"),
       verbatimTextOutput("vals"),
       h2("Predicted Sold Price"),
-      textOutput("pred")
+      textOutput("pred"),
       h2("Price vs Bedrooms Plot"),
       plotOutput("pricePlot") # plot output to display graph
     )
@@ -101,10 +101,10 @@ server <- function(input, output) {
     # plot for bedrooms vs sold price
     output$pricePlot <- renderPlot({
       ggplot(house_data, aes(x = Total.Bedrooms, y = Sold.Price)) +
-        geom_point(size = 3, color = "blue") +  
+        geom_point(size = 3, color = "lightblue") +  
         geom_smooth(method = "lm", se = FALSE, color = "gray") +  # trend line
         geom_point(aes(x = vals()$Total.Bedrooms, y = pred()$.pred[[1]]),  #  predicted point
-                   color = "red", size = 5) +  
+                   color = "pink", size = 5) +  
         labs(x = "Total Bedrooms", y = "Sold Price", title = "Price vs Bedrooms") +
         theme_minimal()
     })
