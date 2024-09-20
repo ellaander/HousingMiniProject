@@ -1,7 +1,7 @@
 ---
-title: "Untitled"
+title: "Static Website"
 author: "Ella"
-date: "2024-09-20"
+date: "2024-09-12"
 output: html_document
 ---
 
