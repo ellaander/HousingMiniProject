@@ -6,6 +6,8 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
+library(ggplot2)
+
 
 # load data
 house_data <- read.csv("https://raw.githubusercontent.com/gmtanner-cord/DATA470-2024/refs/heads/main/fmhousing/FM_Housing_2018_2022_clean.csv")
@@ -13,17 +15,50 @@ house_data <- read.csv("https://raw.githubusercontent.com/gmtanner-cord/DATA470-
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## Total Bedrooms in FM Houses
 
+The majority of houses in the FM area have 3-4 bedrooms. 
 
 ```{r}
 Bedrooms <- house_data$Total.Bedrooms
 hist(Bedrooms)
 ```
+## Total Bathrooms in FM Houses
 
+
+The majority of houses in the FM area have 2-3 bathrooms.
 ```{r}
 Bathrooms <- house_data$Total.Bathrooms
 hist(Bathrooms)
 ```
+## Total Bathrooms vs Sold Price
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+There is a positive relationship between total bathrooms in a house and sold price
+
+```{r}
+ggplot(house_data) +
+  # total bathrooms vs sold price
+  geom_point(aes(x = Total.Bathrooms, y = Sold.Price), color = "blue", alpha = 0.6) +
+  geom_smooth(aes(x = Total.Bathrooms, y = Sold.Price), color = "red", method = "lm", se = FALSE) +
+  labs(
+    title = "Total Bathrooms vs Sold Price",
+    x = "Total Bathrooms",
+    y = "Sold Price"
+  ) 
+```
+## Total Bedrooms vs Sold Price
+
+There is a positive relationship between total bedrooms in a house and sold price
+
+```{r}
+ggplot(house_data) +
+  # total bedrooms vs sold price
+  geom_point(aes(x = Total.Bedrooms, y = Sold.Price), color = "blue", alpha = 0.6) +
+  geom_smooth(aes(x = Total.Bedrooms, y = Sold.Price), color = "red", method = "lm", se = FALSE) +
+  labs(
+    title = "Total and Bedrooms vs Sold Price",
+    x = "Total Bedrooms",
+    y = "Sold Price"
+  ) 
+```
+
