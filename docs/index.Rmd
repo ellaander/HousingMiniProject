@@ -14,6 +14,15 @@ house_data <- read.csv("https://raw.githubusercontent.com/gmtanner-cord/DATA470-
 
 knitr::opts_chunk$set(echo = TRUE)
 ```
+```{r}
+# copy model from model.R
+
+model = lm(Sold.Price ~ Total.Bedrooms + Total.Bathrooms, data = house_data)
+
+
+
+
+```
 
 ## Total Bedrooms in FM Houses
 
@@ -59,4 +68,21 @@ ggplot(house_data) +
     x = "Total Bedrooms",
     y = "Sold Price"
   ) 
+```
+
+
+Model's Predicted Values vs actual Sold Price
+
+```{r}
+house_data$Predicted.Price <- predict(model, newdata = house_data)
+
+ggplot(house_data, aes(x = Sold.Price, y = Predicted.Price)) +
+  geom_point(aes(color = "Predicted Values"), alpha = 0.5) + 
+  geom_abline(aes(color = "Perfect Fit"), slope = 1, intercept = 0, linetype = "dashed", size = 1) + 
+  labs(title = "Predicted vs. Actual Sold Price",
+       x = "Actual Sold Price", y = "Predicted Sold Price") +
+  scale_color_manual(name = "Legend", values = c("Predicted Values" = "blue", "Perfect Fit" = "red")) + s
+  theme_minimal()
+
+
 ```

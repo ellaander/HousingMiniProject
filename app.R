@@ -104,7 +104,7 @@ server <- function(input, output) {
       
       # plot of the predicted point
       geom_point(aes(x = vals()$Total.Bedrooms, y = pred()$.pred[[1]]), 
-                 color = "red", size = 6, shape = 18) + # shape 18 for filled diamond
+                 color = "red", size = 6, shape = 18) +
       
       # Add a linear regression line
       geom_smooth(method = "lm", color = "darkgreen", se = FALSE, size = 1) +
@@ -123,5 +123,4 @@ server <- function(input, output) {
   
 }
 
-# Run the application
 shinyApp(ui = ui, server = server)
