@@ -17,21 +17,21 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Total Bedrooms in FM Houses
 
-The majority of houses in the FM area have 3-4 bedrooms. 
+The majority of houses in the FM area have 3-4 bedrooms.
 
 ```{r}
 Bedrooms <- house_data$Total.Bedrooms
 hist(Bedrooms)
 ```
+
 ## Total Bathrooms in FM Houses
 
-
 The majority of houses in the FM area have 2-3 bathrooms.
+
 ```{r}
 Bathrooms <- house_data$Total.Bathrooms
 hist(Bathrooms)
 ```
-## Total Bathrooms vs Sold Price
 
 There is a positive relationship between total bathrooms in a house and sold price
 
@@ -46,7 +46,6 @@ ggplot(house_data) +
     y = "Sold Price"
   ) 
 ```
-## Total Bedrooms vs Sold Price
 
 There is a positive relationship between total bedrooms in a house and sold price
 
@@ -61,4 +60,3 @@ ggplot(house_data) +
     y = "Sold Price"
   ) 
 ```
-
