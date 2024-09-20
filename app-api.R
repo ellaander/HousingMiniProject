@@ -1,7 +1,7 @@
 library(shiny)
 library(tibble)
 
-api_url <- "http://127.0.0.1:8080/predict"
+api_url <- paste0("http://127.0.0.1:", port, "/predict")
 log <- log4r::logger()
 
 ui <- fluidPage(
@@ -28,7 +28,7 @@ ui <- fluidPage(
       ),
       sliderInput(
         "Total.Bathrooms",
-        "Number of Bathrooms)",
+        "Number of ea)",
         min = 0,
         max = 5,
         value = 2,
