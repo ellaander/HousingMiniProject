@@ -1,21 +1,19 @@
 library(shiny)
 
 fluidPage(
-  titlePanel("Predict Horsepower from MPG"),
+  titlePanel("Predicted Sold Price of House"),
   
   sidebarLayout(
     sidebarPanel(
-      sliderInput("sliderMPG", "What is the MPG of the car?", 10, 35, value = 20),
-      checkboxInput("showModel1", "Show/Hide Model 1", value = TRUE),
-      checkboxInput("showModel2", "Show/Hide Model 2", value = TRUE)
+      sliderInput("sliderBedrooms", "Total Number of Bedrooms", 0, 10, value = 2),
+      sliderInput("sliderBathrooms", "Total Number of Bathrooms", 0, 10, value = 2),
+      submitButton("Submit")
     ),
     
     mainPanel(
       plotOutput("plot1"),
-      h3("Predicted Horsepower from Model 1:"),
+      h3("Predicted Sold Price from Model:"),
       textOutput("pred1"),
-      h3("Predicted Horsepower from Model 2:"),
-      textOutput("pred2")
     )
   )
 )
