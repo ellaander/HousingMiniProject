@@ -403,11 +403,11 @@ and sold price</p>
 <pre class="r"><code>house_data$Predicted.Price &lt;- predict(model, newdata = house_data)
 
 ggplot(house_data, aes(x = Sold.Price, y = Predicted.Price)) +
-  geom_point(aes(color = &quot;Predicted Values&quot;), alpha = 0.5) + # Color points and add to legend
-  geom_abline(aes(color = &quot;Perfect Fit&quot;), slope = 1, intercept = 0, linetype = &quot;dashed&quot;, size = 1) + # Add line to legend
+  geom_point(aes(color = &quot;Predicted Values&quot;), alpha = 0.5) + 
+  geom_abline(aes(color = &quot;Perfect Fit&quot;), slope = 1, intercept = 0, linetype = &quot;dashed&quot;, size = 1) + 
   labs(title = &quot;Predicted vs. Actual Sold Price&quot;,
        x = &quot;Actual Sold Price&quot;, y = &quot;Predicted Sold Price&quot;) +
-  scale_color_manual(name = &quot;Legend&quot;, values = c(&quot;Predicted Values&quot; = &quot;blue&quot;, &quot;Perfect Fit&quot; = &quot;red&quot;)) + # Customize legend colors
+  scale_color_manual(name = &quot;Legend&quot;, values = c(&quot;Predicted Values&quot; = &quot;blue&quot;, &quot;Perfect Fit&quot; = &quot;red&quot;)) + 
   theme_minimal()</code></pre>
 <pre><code>## Warning: `geom_abline()`: Ignoring `mapping` because `slope` and/or `intercept` were
 ## provided.</code></pre>
